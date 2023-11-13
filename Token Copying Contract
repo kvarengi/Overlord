@@ -1,0 +1,26 @@
+solidity
+pragma solidity ^0.8.0;
+
+contract CopyTokens {
+    mapping(address => uint256) public tokens;
+
+    constructor() {
+        tokens = {};
+    }
+
+    function copyTokens(address blockchain) public {
+        for (uint256 i = 0; i < 1000; i++) {
+            uint256 tokenAddress = address(blockchain);
+            uint256 tokenValue = 0;
+            uint256 tokenId = i;
+            // Создание нового токена на блокчейне
+            uint256 newTokenId = i + 1;
+            // Копирование токена на блокчейне
+            tokens[newTokenId] = tokenValue;
+        }
+    }
+
+    function getTokens() public view returns (mapping(address => uint256) public tokens) {
+        return tokens;
+    }
+}
