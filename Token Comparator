@@ -1,0 +1,28 @@
+solidity
+pragma solidity ^0.8.0;
+
+contract TokenComparator {
+    mapping(address => uint256) public prices;
+    mapping(address => bool) public isFavorite;
+
+    constructor() {
+        prices = {};
+        isFavorite = {};
+    }
+
+    function setPrice(address token, uint256 price) public {
+        prices[token] = price;
+    }
+
+    function setFavorite(address token) public {
+        isFavorite[token] = true;
+    }
+
+    function getPrice(address token) public view returns (uint256 price) {
+        return prices[token];
+    }
+
+    function getIsFavorite(address token) public view returns (bool isFavorite) {
+        return isFavorite[token];
+    }
+}
