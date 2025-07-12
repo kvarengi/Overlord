@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта Веб3 Вселенной ДАО 23m00n</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat.gui/0.7.9/dat.gui.min.js"></script>
+    <script src="blockchain-data.js"></script>
+</head>
+<body>
+    <div id="container">
+        <div id="info">
+            <h1>🌙 Карта Веб3 Вселенной ДАО 23m00n</h1>
+            <div id="stats">
+                <div class="stat">
+                    <span class="label">Центр энтропии:</span>
+                    <span class="value" id="entropy-center">BitMoon</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Активные узлы:</span>
+                    <span class="value" id="active-nodes">0</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Общая энтропия:</span>
+                    <span class="value" id="total-entropy">0.00</span>
+                </div>
+            </div>
+            <div id="controls">
+                <button id="add-node">Добавить узел</button>
+                <button id="reset-view">Сброс вида</button>
+                <button id="toggle-animation">Пауза/Продолжить</button>
+            </div>
+        </div>
+        <div id="canvas-container"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
