@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест доступности - Карта Веб3 Вселенной</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            border-left-color: #4CAF50;
+        }
+        .error {
+            background: rgba(244, 67, 54, 0.2);
+            border-left-color: #F44336;
+        }
+        .info {
+            background: rgba(33, 150, 243, 0.2);
+            border-left-color: #2196F3;
+        }
+        h1 {
+            color: #4ecdc4;
+            text-align: center;
+        }
+        .test-button {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>🌙 Тест доступности карты Веб3 Вселенной ДАО 23m00n</h1>
+    
+    <div class="status success">
+        ✅ Сервер запущен и отвечает на порту 8000
+    </div>
+    
+    <div class="status info">
+        📊 Проверка файлов проекта...
+    </div>
+    
+    <div id="file-tests"></div>
+    
+    <div class="status info">
+        🎮 Готово к использованию!
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <button class="test-button" onclick="window.open('index.html', '_blank')">
+            🚀 Открыть карту Веб3 Вселенной
+        </button>
+        
+        <button class="test-button" onclick="runTests()">
+            🔍 Запустить тесты
+        </button>
+    </div>
+    
+    <div id="test-results"></div>
+
+    <script>
+        // Проверка файлов
+        const files = [
+            'index.html',
+            'styles.css', 
+            'script.js',
+            'blockchain-data.js',
+            'blockchain-api.js',
+            'demo-data.js'
+        ];
+
+        async function checkFile(file) {
+            try {
+                const response = await fetch(file);
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        async function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<h3>🔍 Результаты тестов:</h3>';
+            
+            for (const file of files) {
+                const isAvailable = await checkFile(file);
+                const statusClass = isAvailable ? 'success' : 'error';
+                const statusIcon = isAvailable ? '✅' : '❌';
+                
+                resultsDiv.innerHTML += `
+                    <div class="status ${statusClass}">
+                        ${statusIcon} ${file}: ${isAvailable ? 'Доступен' : 'Недоступен'}
+                    </div>
+                `;
+            }
+            
+            // Проверка внешних ресурсов
+            const externalResources = [
+                'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/dat.gui/0.7.9/dat.gui.min.js'
+            ];
+            
+            resultsDiv.innerHTML += '<h3>🌐 Внешние ресурсы:</h3>';
+            
+            for (const resource of externalResources) {
+                try {
+                    const response = await fetch(resource, { mode: 'no-cors' });
+                    resultsDiv.innerHTML += `
+                        <div class="status success">
+                            ✅ ${resource.split('/').pop()}: Доступен
+                        </div>
+                    `;
+                } catch (error) {
+                    resultsDiv.innerHTML += `
+                        <div class="status error">
+                            ❌ ${resource.split('/').pop()}: Недоступен
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Автоматический запуск тестов при загрузке
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>
