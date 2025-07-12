@@ -81,8 +81,24 @@
 
 1. Откройте `index.html` в современном браузере
 2. Дождитесь загрузки 3D сцены
-3. Используйте мышь для навигации
-4. Нажимайте кнопки для управления
+3. Нажмите кнопку "🌙 Загрузить реальные данные" для подключения к блокчейн API
+4. Используйте мышь для навигации
+5. Нажимайте кнопки для управления
+
+### Реальные данные
+Карта подключается к реальным блокчейн API:
+- **Ethereum**: Etherscan API
+- **Binance Smart Chain**: BSCScan API  
+- **Polygon**: Polygonscan API
+
+### Демо данные
+Если API недоступны, используются демо-данные с реальными адресами:
+- Binance Hot/Cold Wallets
+- Uniswap V2/V3 Routers
+- 1inch Router
+- USDT/USDC Treasuries
+- PancakeSwap Router/Factory
+- QuickSwap Router
 
 ## 🔮 Развитие
 

@@ -11,6 +11,9 @@ class Web3UniverseMap {
         this.entropyCenter = { x: 0, y: 0, z: 0 };
         this.totalEntropy = 0;
         this.blockchainManager = new BlockchainDataManager();
+        this.blockchainAPI = new BlockchainAPI();
+        this.demoData = new DemoData();
+        this.realDataLoaded = false;
         
         this.init();
         this.setupEventListeners();
@@ -44,6 +47,9 @@ class Web3UniverseMap {
         
         // Создание начальных узлов
         this.createInitialNodes();
+        
+        // Загрузка реальных блокчейн данных
+        this.loadRealBlockchainData();
     }
 
     createBitMoonCenter() {
@@ -334,6 +340,181 @@ class Web3UniverseMap {
         });
     }
 
+    async loadRealBlockchainData() {
+        try {
+            console.log('Загрузка реальных блокчейн данных...');
+            
+            // Показываем индикатор загрузки
+            this.showLoadingIndicator();
+            
+            // Получаем данные для визуализации
+            const visualizationData = await this.blockchainAPI.getVisualizationData();
+            
+            if (visualizationData && visualizationData.nodes.length > 1) {
+                // Очищаем существующие узлы (кроме центра)
+                this.clearNodesExceptCenter();
+                
+                // Создаем узлы из реальных данных
+                this.createNodesFromRealData(visualizationData.nodes);
+                
+                // Создаем соединения
+                this.createConnectionsFromRealData(visualizationData.connections);
+                
+                this.realDataLoaded = true;
+                console.log('Реальные данные загружены:', visualizationData.nodes.length, 'узлов');
+                
+                // Обновляем статистику
+                this.updateRealDataStats(visualizationData.nodes);
+            } else {
+                console.log('Используем демо данные');
+                this.loadDemoData();
+            }
+            
+            this.hideLoadingIndicator();
+        } catch (error) {
+            console.error('Ошибка загрузки реальных данных:', error);
+            this.hideLoadingIndicator();
+        }
+    }
+
+    showLoadingIndicator() {
+        const loading = document.createElement('div');
+        loading.id = 'loading-indicator';
+        loading.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.9);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                z-index: 10000;
+                text-align: center;
+            ">
+                <div style="margin-bottom: 10px;">🌙 Загрузка реальных блокчейн данных...</div>
+                <div style="width: 200px; height: 4px; background: #333; border-radius: 2px;">
+                    <div style="width: 100%; height: 100%; background: #4ecdc4; border-radius: 2px; animation: loading 2s infinite;"></div>
+                </div>
+                <style>
+                    @keyframes loading {
+                        0% { width: 0%; }
+                        50% { width: 100%; }
+                        100% { width: 0%; }
+                    }
+                </style>
+            </div>
+        `;
+        document.body.appendChild(loading);
+    }
+
+    hideLoadingIndicator() {
+        const loading = document.getElementById('loading-indicator');
+        if (loading) {
+            loading.remove();
+        }
+    }
+
+    clearNodesExceptCenter() {
+        // Удаляем все узлы кроме центра (BitMoon)
+        this.nodes.forEach((node, index) => {
+            if (index > 0) { // Оставляем только первый узел (центр)
+                this.scene.remove(node);
+                if (node.userData.label) {
+                    node.userData.label.remove();
+                }
+            }
+        });
+        
+        // Очищаем соединения
+        this.connections.forEach(connection => {
+            this.scene.remove(connection);
+        });
+        
+        this.nodes = this.nodes.slice(0, 1); // Оставляем только центр
+        this.connections = [];
+    }
+
+    createNodesFromRealData(nodesData) {
+        nodesData.forEach((nodeData, index) => {
+            if (index === 0) return; // Пропускаем центр, он уже создан
+            
+            const geometry = new THREE.OctahedronGeometry(nodeData.size || 1, 0);
+            const material = new THREE.MeshPhongMaterial({
+                color: nodeData.color,
+                emissive: nodeData.color,
+                emissiveIntensity: 0.2,
+                shininess: 50
+            });
+
+            const node = new THREE.Mesh(geometry, material);
+            node.position.set(nodeData.x, nodeData.y, nodeData.z);
+            node.userData = {
+                name: nodeData.name,
+                type: nodeData.type,
+                address: nodeData.address,
+                entropy: nodeData.entropy || 0.5,
+                balance: nodeData.balance,
+                transactionCount: nodeData.transactionCount,
+                originalPosition: { x: nodeData.x, y: nodeData.y, z: nodeData.z }
+            };
+            
+            this.scene.add(node);
+            this.nodes.push(node);
+
+            // Создание соединения с центром
+            this.createConnection(this.entropyCenter, node.position, nodeData.entropy);
+
+            // Добавление текста
+            this.createNodeLabel(node, nodeData.name);
+        });
+    }
+
+    createConnectionsFromRealData(connectionsData) {
+        connectionsData.forEach(connectionData => {
+            if (connectionData.from === 0) { // Соединения с центром уже созданы
+                return;
+            }
+            
+            const fromNode = this.nodes[connectionData.from];
+            const toNode = this.nodes[connectionData.to];
+            
+            if (fromNode && toNode) {
+                this.createConnection(fromNode.position, toNode.position, connectionData.entropy);
+            }
+        });
+    }
+
+    updateRealDataStats(nodes) {
+        const realAddresses = nodes.filter(node => node.address).length;
+        const totalTransactions = nodes.reduce((sum, node) => sum + (node.transactionCount || 0), 0);
+        
+        document.getElementById('real-addresses').textContent = realAddresses;
+        document.getElementById('total-transactions').textContent = totalTransactions;
+        document.getElementById('active-nodes').textContent = nodes.length;
+    }
+
+    loadDemoData() {
+        console.log('Загрузка демо данных...');
+        
+        const demoData = this.demoData.getDemoVisualizationData();
+        
+        // Очищаем существующие узлы (кроме центра)
+        this.clearNodesExceptCenter();
+        
+        // Создаем узлы из демо данных
+        this.createNodesFromRealData(demoData.nodes);
+        
+        // Создаем соединения
+        this.createConnectionsFromRealData(demoData.connections);
+        
+        // Обновляем статистику
+        this.updateRealDataStats(demoData.nodes);
+        
+        console.log('Демо данные загружены:', demoData.nodes.length, 'узлов');
+    }
+
     setupEventListeners() {
         // Обработчики кнопок
         document.getElementById('add-node').addEventListener('click', () => {
@@ -351,6 +532,10 @@ class Web3UniverseMap {
             } else {
                 cancelAnimationFrame(this.animationId);
             }
+        });
+
+        document.getElementById('load-real-data').addEventListener('click', () => {
+            this.loadRealBlockchainData();
         });
 
         // Обработка событий блокчейна

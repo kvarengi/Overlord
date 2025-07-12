@@ -8,6 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat.gui/0.7.9/dat.gui.min.js"></script>
     <script src="blockchain-data.js"></script>
+    <script src="blockchain-api.js"></script>
+    <script src="demo-data.js"></script>
 </head>
 <body>
     <div id="container">
@@ -26,11 +28,20 @@
                     <span class="label">Общая энтропия:</span>
                     <span class="value" id="total-entropy">0.00</span>
                 </div>
+                <div class="stat">
+                    <span class="label">Реальные адреса:</span>
+                    <span class="value" id="real-addresses">0</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Транзакции:</span>
+                    <span class="value" id="total-transactions">0</span>
+                </div>
             </div>
             <div id="controls">
                 <button id="add-node">Добавить узел</button>
                 <button id="reset-view">Сброс вида</button>
                 <button id="toggle-animation">Пауза/Продолжить</button>
+                <button id="load-real-data">🌙 Загрузить реальные данные</button>
             </div>
         </div>
         <div id="canvas-container"></div>
