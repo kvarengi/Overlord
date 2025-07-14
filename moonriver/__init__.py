@@ -8,6 +8,7 @@ from .soliton import spherical_soliton_profile
 from .resonator import Resonator
 from .moonriver_quaternion import MoonRiver_Quaternion
 from .themoon_int import TheMoon_Int
+from .sea_resonance import SeaResonance
 
 __all__ = [
     'schumann_frequency',
@@ -15,4 +16,5 @@ __all__ = [
     'Resonator',
     'MoonRiver_Quaternion',
     'TheMoon_Int',
+    'SeaResonance',
 ]
